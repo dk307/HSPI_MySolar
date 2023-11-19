@@ -1,0 +1,34 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+	<PropertyGroup>
+		<TargetFramework>netcoreapp2.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>enable</Nullable>
+		<LangVersion>latest</LangVersion>
+		<AnalysisLevel>latest</AnalysisLevel>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<Title>Enphase Envoy client library</Title>
+		<Authors>RobIII</Authors>
+		<Company>Devcorner.nl</Company>
+		<Description>Enphase Envoy client library</Description>
+		<PackageProjectUrl>https://github.com/RobThree/NEnvoy</PackageProjectUrl>
+		<PackageIcon>logo.png</PackageIcon>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<RepositoryUrl>https://github.com/RobThree/NEnvoy</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>api-client;envoy;enphase-api;enphase;envoy-api</PackageTags>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<Copyright>Copyright © 2023 Devcorner.nl</Copyright>
+		<Version>0.3.1-alpha</Version>
+		<GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="PolySharp" Version="1.13.2">
+		  <PrivateAssets>all</PrivateAssets>
+		  <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
+		<PackageReference Include="Refit.Xml" Version="6.3.2" />
+	</ItemGroup>
+
+</Project>

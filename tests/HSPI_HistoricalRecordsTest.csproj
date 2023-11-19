@@ -1,0 +1,117 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{3189DB00-014C-48F2-BD3E-81615E268641}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>HSPI_HistoricalRecordsTest</RootNamespace>
+    <AssemblyName>HSPI_HistoricalRecordsTest</AssemblyName>
+    <TargetFrameworkVersion>v4.6.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">15.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <ReferencePath>$(ProgramFiles)\Common Files\microsoft shared\VSTT\$(VisualStudioVersion)\UITestExtensionPackages</ReferencePath>
+    <IsCodedUITest>False</IsCodedUITest>
+    <TestProjectType>UnitTest</TestProjectType>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <LangVersion>11.0</LangVersion>
+    <SonarQubeTestProject>True</SonarQubeTestProject>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="FakeHSController.cs" />
+    <Compile Include="Hspi\BackupTest.cs" />
+    <Compile Include="Hspi\Utils\ExceptionHelperTest.cs" />
+    <Compile Include="Hspi\HistogramTest.cs" />
+    <Compile Include="Hspi\ExecSqlTest.cs" />
+    <Compile Include="Hspi\ScrbianFunctionsTest.cs" />
+    <Compile Include="Hspi\DeleteDataTest.cs" />
+    <Compile Include="Hspi\StatisticDeviceTest.cs" />
+    <Compile Include="Hspi\GraphCallbacksTest.cs" />
+    <Compile Include="Hspi\PruningTest.cs" />
+    <Compile Include="Hspi\DevicePageHistoryCallbacksTest.cs" />
+    <Compile Include="Hspi\DeviceChangedinHSTest.cs" />
+    <Compile Include="Hspi\PlugInTest.cs" />
+    <Compile Include="Hspi\SettingsPagesTest.cs" />
+    <Compile Include="Hspi\Utils\SqliteInvalidExceptionTest.cs" />
+    <Compile Include="Hspi\Utils\HsDeviceInvalidExceptionTests.cs" />
+    <Compile Include="Hspi\Utils\TimeAndValueIteratorTests.cs" />
+    <Compile Include="Hspi\Utils\TimeSeriesAverageTest.cs" />
+    <Compile Include="Hspi\Utils\TimeSeriesGroupingHistogramTest.cs" />
+    <Compile Include="Hspi\Utils\TimeSeriesGroupingLOCFTest.cs" />
+    <Compile Include="Hspi\Utils\TimeSeriesGroupingLinearTest.cs" />
+    <Compile Include="TestHelper.cs" />
+    <Compile Include="Hspi\Utils\TimeSeriesHelperTest.cs" />
+    <Compile Include="Utils\Initialize.cs" />
+    <Compile Include="ShippedDllsTest.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="HomeSeer-PluginSDK">
+      <Version>1.4.4</Version>
+    </PackageReference>
+    <PackageReference Include="HtmlAgilityPack">
+      <Version>1.11.54</Version>
+    </PackageReference>
+    <PackageReference Include="Moq">
+      <Version>4.20.69</Version>
+    </PackageReference>
+    <PackageReference Include="MSTest.TestAdapter">
+      <Version>3.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="MSTest.TestFramework">
+      <Version>3.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json">
+      <Version>13.0.3</Version>
+    </PackageReference>
+    <PackageReference Include="Serilog">
+      <Version>3.1.1</Version>
+    </PackageReference>
+    <PackageReference Include="SonarAnalyzer.CSharp">
+      <Version>9.12.0.78982</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\plugin\HSPI_HistoricalRecords.csproj">
+      <Project>{6afed710-7bb6-40e3-b4cd-4642da950411}</Project>
+      <Name>HSPI_HistoricalRecords</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
+  <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

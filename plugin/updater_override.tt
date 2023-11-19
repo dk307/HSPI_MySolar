@@ -1,0 +1,25 @@
+﻿<#@template hostspecific="true"#> 
+<#
+ string version = Host.ResolveParameterValue(null, null, "Version");
+#>
+{ 
+ "Version":"4.0.0.0",
+ "Packages":[
+  {
+    "PackageName": "My Solar",
+    "EXEFile": "HSPI_MySolar.exe",
+    "ID": "MySolar",
+    "Version": "<#=version#>",
+    "UC": 63,
+    "ZipFile": "HSPI_MySolar_<#=version#>.zip",
+    "Author": "dk307",
+    "Price": "25",
+    "ReleaseNotesURL": "https://github.com/dk307/HSPI_MySolar",
+    "SupportURL": "https://github.com/dk307/HSPI_MySolar/issues",
+    "Tags": [
+      "Free",
+      "Beta"
+    ]
+  } 
+]
+}

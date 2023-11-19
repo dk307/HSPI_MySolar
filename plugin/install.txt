@@ -1,0 +1,6 @@
+﻿HSPI_MySolar.exe,.,0
+HSPI_MySolar.exe.config,.,0
+.,[DELALL],.\bin\MySolar
+dlls.zip,[UNZIPOVER],.\bin\MySolar
+.,[DELALL],.\html\MySolar
+html.zip,[UNZIP],.\html\MySolar
