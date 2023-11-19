@@ -11,17 +11,17 @@ namespace Hspi.Device
         FeatureType = 0x100,
 
         [ImagePathAttribute("solarwatts")]
-        [UnitAttribute("KWatts")]
+        [UnitAttribute("kW")]
         [DecimalPointsAttribute(3)]
         Production = FeatureType | 0x2,
 
         [ImagePathAttribute("consumptionwatts")]
-        [UnitAttribute("KWatts")]
+        [UnitAttribute("kW")]
         [DecimalPointsAttribute(3)]
         Consumption = FeatureType | 0x3,
 
         [ImagePathAttribute("netconsumptionwatts")]
-        [UnitAttribute("KWatts")]
+        [UnitAttribute("kW")]
         [DecimalPointsAttribute(3)]
         NetConsumption = FeatureType | 0x4,
 
@@ -39,32 +39,32 @@ namespace Hspi.Device
 
         [DecimalPointsAttribute(3)]
         [ImagePathAttribute("kwh")]
-        [UnitAttribute("KW Hours")]
+        [UnitAttribute("kWh")]
         ProducedToday = FeatureType | 0x8,
 
         [DecimalPointsAttribute(3)]
         [ImagePathAttribute("kwh")]
-        [UnitAttribute("KW Hours")]
+        [UnitAttribute("kWh")]
         ConsumptionToday = FeatureType | 0x9,
 
         [DecimalPointsAttribute(3)]
         [ImagePathAttribute("kwh")]
-        [UnitAttribute("KW Hours")]
+        [UnitAttribute("kWh")]
         Produced7Days = FeatureType | 0xA,
 
         [DecimalPointsAttribute(3)]
         [ImagePathAttribute("kwh")]
-        [UnitAttribute("KW Hours")]
+        [UnitAttribute("kWh")]
         Consumption7Days = FeatureType | 0xB,
 
         [DecimalPointsAttribute(3)]
         [ImagePathAttribute("kwh")]
-        [UnitAttribute("KW Hours")]
+        [UnitAttribute("kWh")]
         ProducedLifetime = FeatureType | 0xC,
 
         [DecimalPointsAttribute(3)]
         [ImagePathAttribute("kwh")]
-        [UnitAttribute("KW Hours")]
+        [UnitAttribute("kWh")]
         ConsumptionLifetime = FeatureType | 0xD,
 
         [DecimalPointsAttribute(0)]
