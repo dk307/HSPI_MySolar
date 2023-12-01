@@ -7,9 +7,11 @@ namespace Hspi
     internal interface IEnvoySettings
     {
         string? EnvoyHost { get; }
+        bool InvertersWattsEnabled { get; }
+        bool LifetimeKwhEnabled { get; }
         string? Password { get; }
-        string? UserName { get; }
-
         TimeSpan RefreshInterval { get; }
+        bool SevenDaysKwhEnabled { get; }
+        string? UserName { get; }
     }
 }

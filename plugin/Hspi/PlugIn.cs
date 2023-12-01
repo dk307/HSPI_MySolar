@@ -69,6 +69,9 @@ namespace Hspi
             if (SettingsPages.OnSettingChange(changedView))
             {
                 UpdateDebugLevel();
+                deviceManager?.Dispose();
+                deviceManager = new DeviceManager(HomeSeerSystem, SettingsPages, ShutdownCancellationToken);
+
                 return true;
             }
 
