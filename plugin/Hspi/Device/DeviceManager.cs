@@ -43,14 +43,18 @@ namespace Hspi.Device
                             .ContinueWith((dataTask) => mainDevice.Update(dataTask.Result)).ConfigureAwait(false);
                 await client.GetInventoryAsync(CancellationToken)
                             .ContinueWith((dataTask) => mainDevice.Update(dataTask.Result)).ConfigureAwait(false);
-                await client.GetV1InvertersAsync(CancellationToken)
-                            .ContinueWith((dataTask) => invertersDevice.Update(dataTask.Result)).ConfigureAwait(false);
+
+                if (invertersDevice != null)
+                {
+                    await client.GetV1InvertersAsync(CancellationToken)
+                                .ContinueWith((dataTask) => invertersDevice.Update(dataTask.Result)).ConfigureAwait(false);
+                }
 
                 await Task.Delay(envoySettings.RefreshInterval, CancellationToken).ConfigureAwait(false);
             }
         }
 
-        private (MainDevice, InvertersDevice) SetupDevices(IHsController hs)
+        private (MainDevice, InvertersDevice?) SetupDevices(IHsController hs)
         {
             MainDevice? mainDevice2 = null;
             InvertersDevice? invertersDevice2 = null;
@@ -64,9 +68,11 @@ namespace Hspi.Device
                     var deviceType = BaseHsDevice.GetType(hs, refId);
                     if (deviceType == DeviceAndFeatureType.Main)
                     {
-                        mainDevice2 = new MainDevice(hs, refId, CancellationToken);
+                        mainDevice2 = new MainDevice(hs, refId,
+                                                     this.envoySettings.SevenDaysKwhEnabled,
+                                                     this.envoySettings.LifetimeKwhEnabled, CancellationToken);
                     }
-                    else if (deviceType == DeviceAndFeatureType.InvertersDevice)
+                    else if ((envoySettings.InvertersWattsEnabled) && (deviceType == DeviceAndFeatureType.InvertersDevice))
                     {
                         invertersDevice2 = new InvertersDevice(hs, refId, CancellationToken);
                     }
@@ -80,10 +86,12 @@ namespace Hspi.Device
             if (mainDevice2 == null)
             {
                 int refId = MainDevice.CreateDevice(hs);
-                mainDevice2 = new MainDevice(hs, refId, CancellationToken);
+                mainDevice2 = new MainDevice(hs, refId,
+                                             this.envoySettings.SevenDaysKwhEnabled,
+                                             this.envoySettings.LifetimeKwhEnabled, CancellationToken);
             }
 
-            if (invertersDevice2 == null)
+            if ((envoySettings.InvertersWattsEnabled) && (invertersDevice2 == null))
             {
                 int refId = InvertersDevice.CreateDevice(hs);
                 invertersDevice2 = new InvertersDevice(hs, refId, CancellationToken);
@@ -120,7 +128,7 @@ namespace Hspi.Device
 
         private readonly IEnvoySettings envoySettings;
         private readonly MainDevice mainDevice;
-        private readonly InvertersDevice invertersDevice;
+        private readonly InvertersDevice? invertersDevice;
         private readonly CancellationTokenSource cancellationTokenSource;
         private CancellationToken CancellationToken => cancellationTokenSource.Token;
     }

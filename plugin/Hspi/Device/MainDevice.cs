@@ -17,6 +17,8 @@ namespace Hspi.Device
     {
         public MainDevice(IHsController hs,
                           int deviceRefId,
+                          bool sevenDaysKwhEnabled,
+                          bool lifeTimeKwhEnabled,
                           CancellationToken cancellationToken)
             : base(hs, deviceRefId, cancellationToken)
         {
@@ -41,10 +43,18 @@ namespace Hspi.Device
             CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.MicroInvertersCommunicating);
             CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.ProducedToday);
             CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.ConsumptionToday);
-            CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.Produced7Days);
-            CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.Consumption7Days);
-            CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.ProducedLifetime);
-            CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.ConsumptionLifetime);
+
+            if (this.sevenDaysKwhEnabled)
+            {
+                CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.Produced7Days);
+                CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.Consumption7Days);
+            }
+
+            if (this.lifeTimeKwhEnabled)
+            {
+                CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.ProducedLifetime);
+                CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.ConsumptionLifetime);
+            }
 
             deviceFeatures = features.ToImmutableDictionary();
 
@@ -58,6 +68,9 @@ namespace Hspi.Device
                     features[featureType] = featureId;
                 }
             }
+
+            this.sevenDaysKwhEnabled = sevenDaysKwhEnabled;
+            this.lifeTimeKwhEnabled = lifeTimeKwhEnabled;
         }
 
         public static int CreateDevice(IHsController hsController)
@@ -88,11 +101,17 @@ namespace Hspi.Device
             UpdateTodayValue(totalConsumption, DeviceAndFeatureType.ConsumptionToday);
             UpdateTodayValue(production, DeviceAndFeatureType.ProducedToday);
 
-            Update7DaysValue(totalConsumption, DeviceAndFeatureType.Consumption7Days);
-            Update7DaysValue(production, DeviceAndFeatureType.Produced7Days);
+            if (this.sevenDaysKwhEnabled)
+            {
+                Update7DaysValue(totalConsumption, DeviceAndFeatureType.Consumption7Days);
+                Update7DaysValue(production, DeviceAndFeatureType.Produced7Days);
+            }
 
-            UpdateLifetimeValue(totalConsumption, DeviceAndFeatureType.ConsumptionLifetime);
-            UpdateLifetimeValue(production, DeviceAndFeatureType.ProducedLifetime);
+            if (this.lifeTimeKwhEnabled)
+            {
+                UpdateLifetimeValue(totalConsumption, DeviceAndFeatureType.ConsumptionLifetime);
+                UpdateLifetimeValue(production, DeviceAndFeatureType.ProducedLifetime);
+            }
 
             void UpdateWattsNowValue(EIM value, DeviceAndFeatureType type)
             {
@@ -187,5 +206,7 @@ namespace Hspi.Device
         }
 
         private readonly ImmutableDictionary<DeviceAndFeatureType, int> deviceFeatures;
+        private readonly bool lifeTimeKwhEnabled;
+        private readonly bool sevenDaysKwhEnabled;
     }
 }
