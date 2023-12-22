@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading;
@@ -9,7 +8,6 @@ using NEnvoy.Internals;
 using NEnvoy.Internals.Models;
 using NEnvoy.Models;
 using Refit;
-using Serilog.Debugging;
 
 #nullable enable
 
@@ -25,8 +23,6 @@ namespace Hspi.NEnvoy
             this.session = session;
         }
 
-        public string GetToken() => (session ?? throw new NoActiveSessionException()).Token;
-
         public static async Task<EnvoyClient> FromLoginAsync(EnvoyConnectionInfo connectionInfo,
                                                              CancellationToken cancellationToken = default)
         {
@@ -41,25 +37,27 @@ namespace Hspi.NEnvoy
             if (string.Equals(loginresult.Message, "success", StringComparison.OrdinalIgnoreCase))
             {
                 var entrezclient = RestService.For<IEntrezEnphase>(connectionInfo.EnphaseEntrezBaseUri);
-                var token = await entrezclient.RequestTokenAsync(new EnphaseTokenRequest(loginresult.SessionId, envoyInfo.Device.Serial, connectionInfo.Username), cancellationToken).ConfigureAwait(false);
+                string? serial = envoyInfo.Device?.Serial;
+                if (!string.IsNullOrWhiteSpace(serial))
+                {
+                    var token = await entrezclient.RequestTokenAsync(new EnphaseTokenRequest(loginresult.SessionId,
+                                                                                             serial!,   // null check earlier
+                                                                                             connectionInfo.Username),
+                                                                     cancellationToken).ConfigureAwait(false);
 
-                var session2 = EnvoySession.Create(baseAddress, connectionInfo.SessionTimeout, token);
-                var envoyjsonclient = GetEnvoyJsonClient(baseAddress, session2);
+                    var session2 = EnvoySession.Create(baseAddress, connectionInfo.SessionTimeout, token);
+                    var envoyjsonclient = GetEnvoyJsonClient(baseAddress, session2);
 
-                return new EnvoyClient(envoyxmlclient, envoyjsonclient, session2);
+                    return new EnvoyClient(envoyxmlclient, envoyjsonclient, session2);
+                }
+                else
+                {
+                    throw new LoginFailedException("Login suceeded but Serial is null or empty");
+                }
             }
 
             throw new LoginFailedException(loginresult.Message);
         }
-
-        public Task<ProductionData> GetProductionAsync(CancellationToken cancellationToken = default)
-                => envoyJsonClient.GetProductionAsync(cancellationToken);
-
-        public Task<IEnumerable<InventoryItem>> GetInventoryAsync(CancellationToken cancellationToken = default)
-            => envoyJsonClient.GetInventoryAsync(cancellationToken);
-
-        public Task<IEnumerable<V1Inverter>> GetV1InvertersAsync(CancellationToken cancellationToken = default)
-            => envoyJsonClient.GetV1InvertersAsync(cancellationToken);
 
         public static EnvoyClient FromToken(string token, EnvoyConnectionInfo connectionInfo)
         {
@@ -68,6 +66,17 @@ namespace Hspi.NEnvoy
             var envoyjsonclient = GetEnvoyJsonClient(baseuri, session2);
             return new(GetEnvoyXmlClient(baseuri), envoyjsonclient, session2);
         }
+
+        public Task<IEnumerable<InventoryItem>> GetInventoryAsync(CancellationToken cancellationToken = default)
+            => envoyJsonClient.GetInventoryAsync(cancellationToken);
+
+        public Task<ProductionData> GetProductionAsync(CancellationToken cancellationToken = default)
+                => envoyJsonClient.GetProductionAsync(cancellationToken);
+
+        public string GetToken() => (session ?? throw new NoActiveSessionException()).Token;
+
+        public Task<IEnumerable<V1Inverter>> GetV1InvertersAsync(CancellationToken cancellationToken = default)
+            => envoyJsonClient.GetV1InvertersAsync(cancellationToken);
 
         private static Uri CreateBaseUri(string host) => new($"https://{host}");
 
