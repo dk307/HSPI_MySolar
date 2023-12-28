@@ -12,6 +12,7 @@ namespace Hspi
         string? Password { get; }
         TimeSpan RefreshInterval { get; }
         bool SevenDaysKwhEnabled { get; }
+        bool InverterStatusEnabled { get; }
         string? UserName { get; }
     }
 }

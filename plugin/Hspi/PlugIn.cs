@@ -28,7 +28,15 @@ namespace Hspi
 
         protected override void BeforeReturnStatus()
         {
-            this.Status = PluginStatus.Ok();
+            var lastError = this.deviceManager?.LastError;
+            if (lastError != null)
+            {
+                this.Status = new PluginStatus(PluginStatus.EPluginStatus.Critical, lastError.GetFullMessage());
+            }
+            else
+            {
+                this.Status = PluginStatus.Ok();
+            }
         }
 
         protected override void Dispose(bool disposing)
@@ -100,7 +108,7 @@ namespace Hspi
             Logger.ConfigureLogging(SettingsPages.LogLevel, logToFile, HomeSeerSystem);
         }
 
-        private SettingsPages? settingsPages;
         private DeviceManager? deviceManager;
+        private SettingsPages? settingsPages;
     }
 }
