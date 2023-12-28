@@ -31,6 +31,7 @@ namespace Hspi
             InvertersWattsEnabled = collection[SettingPageId].GetViewById<ToggleView>(InvertersWattEnabledId).IsEnabled;
             SevenDaysKwhEnabled = collection[SettingPageId].GetViewById<ToggleView>(SevenDaysKwhEnabledId).IsEnabled;
             LifetimeKwhEnabled = collection[SettingPageId].GetViewById<ToggleView>(LifetimeKwhEnabledId).IsEnabled;
+            InverterStatusEnabled = collection[SettingPageId].GetViewById<ToggleView>(InverterStatusEnabledId).IsEnabled;
         }
 
         public bool DebugLoggingEnabled => LogLevel <= LogEventLevel.Debug;
@@ -47,6 +48,7 @@ namespace Hspi
         public bool InvertersWattsEnabled { get; private set; }
         public bool SevenDaysKwhEnabled { get; private set; }
         public bool LifetimeKwhEnabled { get; private set; }
+        public bool InverterStatusEnabled { get; private set; }
 
         public static Page CreateDefault(LogEventLevel logEventLevel = LogEventLevel.Information,
                                          bool logToFileDefault = false)
@@ -73,6 +75,7 @@ namespace Hspi
             settings = settings.WithToggle(InvertersWattEnabledId, "Inverters Watts Device Enabled", false);
             settings = settings.WithToggle(SevenDaysKwhEnabledId, "7 days Kwh Enabled", false);
             settings = settings.WithToggle(LifetimeKwhEnabledId, "Lifetime Kwh Enabled", false);
+            settings = settings.WithToggle(InverterStatusEnabledId, "Inverter Status Enabled", false);
 
             return settings.Page;
         }
@@ -139,6 +142,12 @@ namespace Hspi
                 return true;
             }
 
+            if (changedView.Id == InverterStatusEnabledId)
+            {
+                InverterStatusEnabled = ((ToggleView)changedView).IsEnabled;
+                return true;
+            }
+
             return false;
         }
 
@@ -150,6 +159,7 @@ namespace Hspi
         internal const string InvertersWattEnabledId = "InvertersWattEnabled";
         internal const string SevenDaysKwhEnabledId = "SevenDaysKwhEnabled";
         internal const string LifetimeKwhEnabledId = "LifetimeKwhEnabled";
+        internal const string InverterStatusEnabledId = "InverterStatusEnabled";
         internal const string SettingPageId = "SettingPage";
         internal const string UserNameId = "Username";
     }

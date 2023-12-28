@@ -19,6 +19,7 @@ namespace Hspi.Device
                           int deviceRefId,
                           bool sevenDaysKwhEnabled,
                           bool lifeTimeKwhEnabled,
+                          bool inverterStatusEnabled,
                           CancellationToken cancellationToken)
             : base(hs, deviceRefId, cancellationToken)
         {
@@ -38,9 +39,13 @@ namespace Hspi.Device
             CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.Production);
             CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.Consumption);
             CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.NetConsumption);
-            CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.TotalMicroInverters);
-            CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.MicroInvertersOperating);
-            CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.MicroInvertersCommunicating);
+            if (this.inverterStatusEnabled)
+            {
+                CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.TotalMicroInverters);
+                CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.MicroInvertersOperating);
+                CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.MicroInvertersCommunicating);
+            }
+
             CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.ProducedToday);
             CheckFeatureTypeExists(hs, features, deviceRefId, DeviceAndFeatureType.ConsumptionToday);
 
@@ -71,6 +76,7 @@ namespace Hspi.Device
 
             this.sevenDaysKwhEnabled = sevenDaysKwhEnabled;
             this.lifeTimeKwhEnabled = lifeTimeKwhEnabled;
+            this.inverterStatusEnabled = inverterStatusEnabled;
         }
 
         public static int CreateDevice(IHsController hsController)
@@ -157,6 +163,11 @@ namespace Hspi.Device
 
         public void Update(IEnumerable<InventoryItem> inventory)
         {
+            if (!this.inverterStatusEnabled)
+            {
+                return;
+            }
+
             int? total = null;
             int? communicating = null;
             int? operating = null;
@@ -207,6 +218,7 @@ namespace Hspi.Device
 
         private readonly ImmutableDictionary<DeviceAndFeatureType, int> deviceFeatures;
         private readonly bool lifeTimeKwhEnabled;
+        private readonly bool inverterStatusEnabled;
         private readonly bool sevenDaysKwhEnabled;
     }
 }
