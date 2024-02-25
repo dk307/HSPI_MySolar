@@ -23,6 +23,10 @@ namespace Hspi.Device
                           CancellationToken cancellationToken)
             : base(hs, deviceRefId, cancellationToken)
         {
+            this.sevenDaysKwhEnabled = sevenDaysKwhEnabled;
+            this.lifeTimeKwhEnabled = lifeTimeKwhEnabled;
+            this.inverterStatusEnabled = inverterStatusEnabled;
+
             var children = (HashSet<int>)hs.GetPropertyByRef(deviceRefId, EProperty.AssociatedDevices);
 
             Dictionary<DeviceAndFeatureType, int> features = new();
@@ -73,10 +77,6 @@ namespace Hspi.Device
                     features[featureType] = featureId;
                 }
             }
-
-            this.sevenDaysKwhEnabled = sevenDaysKwhEnabled;
-            this.lifeTimeKwhEnabled = lifeTimeKwhEnabled;
-            this.inverterStatusEnabled = inverterStatusEnabled;
         }
 
         public static int CreateDevice(IHsController hsController)
