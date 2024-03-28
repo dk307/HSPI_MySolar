@@ -30,7 +30,10 @@ namespace Hspi.NEnvoy
             var envoyxmlclient = GetEnvoyXmlClient(baseAddress);
             var envoyInfo = await GetEnvoyInfoAsync(envoyxmlclient, cancellationToken).ConfigureAwait(false);
 
-            var enphaseclient = RestService.For<IEnphase>(connectionInfo.EnphaseBaseUri);
+            var client = RestService.CreateHttpClient(connectionInfo.EnphaseBaseUri, null);
+            client.Timeout = TimeSpan.FromSeconds(30);
+
+            var enphaseclient = RestService.For<IEnphase>(client);
 
             EnphaseLoginRequest login = new(connectionInfo.Username, connectionInfo.Password);
             var loginresult = await enphaseclient.LoginAsync(login, cancellationToken).ConfigureAwait(false);
@@ -83,8 +86,8 @@ namespace Hspi.NEnvoy
         private static Task<EnvoyInfo> GetEnvoyInfoAsync(IEnvoyXmlApi envoyClient, CancellationToken cancellationToken = default)
                 => envoyClient.GetEnvoyInfoAsync(cancellationToken);
 
-        private static IEnvoyJsonApi GetEnvoyJsonClient(Uri baseAddress, EnvoySession session)
-            => RestService.For<IEnvoyJsonApi>(GetUnsafeClient(baseAddress, session));
+        private static IEnvoyJsonApi GetEnvoyJsonClient(Uri baseAddress, EnvoySession session) =>
+             RestService.For<IEnvoyJsonApi>(GetUnsafeClient(baseAddress, session));
 
         private static IEnvoyXmlApi GetEnvoyXmlClient(Uri baseAddress)
                                                             => RestService.For<IEnvoyXmlApi>(GetUnsafeClient(baseAddress), new RefitSettings
@@ -109,6 +112,8 @@ namespace Hspi.NEnvoy
             {
                 BaseAddress = baseAddress
             };
+
+            client.Timeout = TimeSpan.FromSeconds(30);
 
             return client;
         }
