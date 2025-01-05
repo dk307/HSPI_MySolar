@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using HomeSeer.PluginSdk;
@@ -106,44 +107,59 @@ namespace Hspi.Device
 
         private async Task UpdateDeviceData()
         {
-            try
+            string tokenPath = Path.Combine(PlugInData.HomeSeerDirectory, "Data", PlugInData.PlugInId, "token.txt");
+            while (!CancellationToken.IsCancellationRequested)
             {
-                string tokenPath = Path.Combine(PlugInData.HomeSeerDirectory, "Data", PlugInData.PlugInId, "token.txt");
-
-                EnvoyConnectionInfo envoyConnectionInfo = new()
+                try
                 {
-                    Username = envoySettings.UserName ?? string.Empty,
-                    Password = envoySettings.Password ?? string.Empty,
-                    EnvoyHost = envoySettings.EnvoyHost ?? string.Empty,
-                };
-
-                var client = await GetClientAsync(envoyConnectionInfo, tokenPath, CancellationToken).ConfigureAwait(false);
-
-                while (!CancellationToken.IsCancellationRequested)
-                {
-                    await client.GetProductionAsync(CancellationToken)
-                                .ContinueWith((dataTask) => mainDevice.Update(dataTask.Result)).ConfigureAwait(false);
-
-                    if (envoySettings.InverterStatusEnabled)
+                    EnvoyConnectionInfo envoyConnectionInfo = new()
                     {
-                        await client.GetInventoryAsync(CancellationToken)
+                        Username = envoySettings.UserName ?? string.Empty,
+                        Password = envoySettings.Password ?? string.Empty,
+                        EnvoyHost = envoySettings.EnvoyHost ?? string.Empty,
+                    };
+
+                    var client = await GetClientAsync(envoyConnectionInfo, tokenPath, CancellationToken).ConfigureAwait(false);
+
+                    while (!CancellationToken.IsCancellationRequested)
+                    {
+                        await client.GetProductionAsync(CancellationToken)
                                     .ContinueWith((dataTask) => mainDevice.Update(dataTask.Result)).ConfigureAwait(false);
-                    }
 
-                    if (invertersDevice != null)
-                    {
-                        await client.GetV1InvertersAsync(CancellationToken)
-                                    .ContinueWith((dataTask) => invertersDevice.Update(dataTask.Result)).ConfigureAwait(false);
-                    }
+                        if (envoySettings.InverterStatusEnabled)
+                        {
+                            await client.GetInventoryAsync(CancellationToken)
+                                        .ContinueWith((dataTask) => mainDevice.Update(dataTask.Result)).ConfigureAwait(false);
+                        }
 
-                    this.LastError = null;
-                    await Task.Delay(envoySettings.RefreshInterval, CancellationToken).ConfigureAwait(false);
+                        if (invertersDevice != null)
+                        {
+                            await client.GetV1InvertersAsync(CancellationToken)
+                                        .ContinueWith((dataTask) => invertersDevice.Update(dataTask.Result)).ConfigureAwait(false);
+                        }
+
+                        this.LastError = null;
+                        await Task.Delay(envoySettings.RefreshInterval, CancellationToken).ConfigureAwait(false);
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                this.LastError = ex;
-                throw;
+                catch (System.AggregateException ex)
+                {
+                    if (ex.InnerException is HttpRequestException httpException &&
+                        httpException.Message.Contains("401") &&
+                        System.IO.File.Exists(tokenPath))
+                    {
+                        Log.Information("Deleting token file.");
+                        System.IO.File.Delete(tokenPath);
+                        continue;
+                    }
+                    this.LastError = ex;
+                    throw;
+                }
+                catch (Exception ex)
+                {
+                    this.LastError = ex;
+                    throw;
+                }
             }
         }
 
